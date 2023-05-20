@@ -12,9 +12,9 @@ stages:
     jobs:
       - job: PrivateBuild
         pool: Default
-        #container:
-          #image: webonyx/azuredevops-toolbox:latest
-          # endpoint: ACC-NPRD-GRAPH-ACR-01
+        container:
+          image: toolbox:latest
+          endpoint: webonyxregistrysouthcentralus
         steps:
           - task: Docker@2
             name: BuildAndPush
