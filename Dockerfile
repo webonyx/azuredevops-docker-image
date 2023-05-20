@@ -38,7 +38,8 @@ FROM core AS tools
 #****************        DOCKER    *********************************************
 ARG DOCKER_BUCKET="download.docker.com"
 ARG DOCKER_CHANNEL="stable"
-ARG DOCKER_COMPOSE_VERSION="2.17.2"
+ARG DOCKER_COMPOSE_VERSION="2.18.1"
+ARG DOCKER_BUILDX_VERSION="0.10"
 ARG SRC_DIR="/usr/src"
 
 ARG DOCKER_SHA256="ec8a71e79125d3ca76f7cc295f35eea225f4450e0ffe0775f103e2952ff580f6"
@@ -50,11 +51,10 @@ RUN set -ex \
     && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
     && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
     && rm docker.tgz \
-    && docker -v \
-    && curl -L https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose \
-    # Ensure docker-compose works
-    && docker-compose version
+    && docker -v
+
+COPY --from=docker/compose-bin:$DOCKER_COMPOSE_VERSION /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker compose version && docker-compose version
 
 COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 RUN docker buildx version
