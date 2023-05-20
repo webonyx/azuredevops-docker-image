@@ -10,7 +10,7 @@ variables:
 stages:
   - stage: Build
     jobs:
-      - job: ACR
+      - job: PrivateBuild
         pool: Default
         #container:
           #image: webonyx/azuredevops-toolbox:latest

@@ -34,6 +34,31 @@ ENV LC_CTYPE="C.UTF-8"
 
 FROM core AS tools
 
+#****************        DOCKER    *********************************************
+ARG DOCKER_BUCKET="download.docker.com"
+ARG DOCKER_CHANNEL="stable"
+ARG DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034"
+ARG DOCKER_COMPOSE_VERSION="2.17.2"
+ARG SRC_DIR="/usr/src"
+
+ARG DOCKER_SHA256="ec8a71e79125d3ca76f7cc295f35eea225f4450e0ffe0775f103e2952ff580f6"
+ARG DOCKER_VERSION="23.0.1"
+
+# Install Docker
+RUN set -ex \
+    && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
+    && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
+    && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
+    && rm docker.tgz \
+    && docker -v \
+    && wget -q "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind" -O /usr/local/bin/dind \
+    && curl -L https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/dind /usr/local/bin/docker-compose \
+    # Ensure docker-compose works
+    && docker-compose version
+
+VOLUME /var/lib/docker
+#*********************** END  DOCKER  ****************************
 
 # AWS Tools
 RUN curl -sS -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.25.6/2023-01-30/bin/linux/amd64/kubectl \
