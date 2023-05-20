@@ -5,7 +5,6 @@ trigger:
   - main
 
 variables:
-  ACR_NAME: webonyxregistrysouthcentralus
   DOCKER_CONNECTION: DockerHub
 
 steps:
@@ -17,6 +16,7 @@ steps:
     name: BuildAndPush
     inputs:
       command: buildAndPush
-      repository: webonyx/azuredevops-toolbox
+      addPipelineData: false
       containerRegistry: $(DOCKER_CONNECTION)
+      repository: webonyx/azuredevops-toolbox
       tags: $(IMAGE_TAG)
