@@ -6,7 +6,7 @@ trigger:
 
 variables:
   ACR_NAME: webonyxregistrysouthcentralus
-  ACR_CONNECTION_NAME: webonyxregistrysouthcentralus
+  DOCKER_CONNECTION: DockerHub
 
 steps:
   - script: |
@@ -14,17 +14,9 @@ steps:
     name: SetImageTag
 
   - task: Docker@2
-    name: DockerBuild
+    name: BuildAndPush
     inputs:
-      command: build
-      repository: phamviet/toolbox
-      arguments: --tag $(ACR_NAME).azurecr.io/toolbox:$(IMAGE_TAG)
-      tags: $(IMAGE_TAG)
-
-  - task: Docker@2
-    name: DockerPush
-    inputs:
-      command: push
-      repository: toolbox
-      containerRegistry: $(ACR_CONNECTION_NAME)
+      command: buildAndPush
+      repository: webonyx/azuredevops-toolbox
+      containerRegistry: $(DOCKER_CONNECTION)
       tags: $(IMAGE_TAG)

@@ -41,7 +41,7 @@ RUN curl -sS -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon
     && mv kustomize /usr/local/bin/ \
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/kustomize
 
-ARG APOLLO_ROVER_VERSION="0.14.0"
+ARG APOLLO_ROVER_VERSION="0.14.1"
 RUN curl -sSL https://rover.apollo.dev/nix/v${APOLLO_ROVER_VERSION} | sh -s -- --elv2-license accept \
     && mv $HOME/.rover/bin/rover /usr/local/bin/ && ln -sf /usr/local/bin/rover $HOME/.rover/bin/rover
 
