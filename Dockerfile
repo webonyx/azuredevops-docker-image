@@ -1,5 +1,13 @@
 # syntax=docker/dockerfile:1
 
+ARG DOCKER_VERSION="24.0.1"
+ARG DOCKER_COMPOSE_VERSION="2.18.1"
+ARG DOCKER_BUILDX_VERSION="0.10"
+
+FROM docker:${DOCKER_VERSION}-cli AS docker-cli
+FROM docker/compose-bin:v${DOCKER_COMPOSE_VERSION} AS compose-bin
+FROM docker/buildx-bin:v${DOCKER_BUILDX_VERSION} AS buildx-bin
+
 FROM public.ecr.aws/ubuntu/ubuntu:22.04 AS core
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -39,13 +47,14 @@ ARG DOCKER_COMPOSE_VERSION="2.18.1"
 ARG DOCKER_BUILDX_VERSION="0.10"
 
 # Install Docker
-COPY --from=docker:${DOCKER_VERSION}-cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 RUN docker -v
 
-COPY --from=docker/compose-bin:v${DOCKER_COMPOSE_VERSION} /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+COPY --from=compose-bin /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
 RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker-compose version
 
-COPY --from=docker/buildx-bin:v${DOCKER_BUILDX_VERSION} /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+COPY --from=buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+
 RUN docker compose version && docker buildx version
 
 VOLUME /var/lib/docker
