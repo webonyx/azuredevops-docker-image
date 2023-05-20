@@ -1,0 +1,25 @@
+pool: Default
+
+trigger:
+  - main
+
+steps:
+  - script: |
+      echo "##vso[task.setvariable variable=IMAGE_TAG]$(date +%Y%B%d)"
+    name: SetImageTag
+
+  - task: Docker@2
+    name: DockerBuild
+    inputs:
+      command: build
+      repository: phamviet/toolbox
+      arguments: --tag $(ACR_NAME).azurecr.io/toolbox:$(IMAGE_TAG)
+      tags: $(IMAGE_TAG)
+
+  - task: Docker@2
+    name: DockerPush
+    inputs:
+      command: push
+      repository: toolbox
+      containerRegistry: ACC-NPRD-GRAPH-ACR-01
+      tags: $(IMAGE_TAG)
