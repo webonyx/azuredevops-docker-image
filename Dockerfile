@@ -1,7 +1,5 @@
 # syntax=docker/dockerfile:1
 
-FROM docker:24.0.1-cli AS docker
-
 FROM public.ecr.aws/ubuntu/ubuntu:22.04 AS core
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -36,31 +34,19 @@ ENV LC_CTYPE="C.UTF-8"
 FROM core AS tools
 
 #****************        DOCKER    *********************************************
-ARG DOCKER_BUCKET="download.docker.com"
-ARG DOCKER_CHANNEL="stable"
+ARG DOCKER_VERSION="24.0.1"
 ARG DOCKER_COMPOSE_VERSION="2.18.1"
 ARG DOCKER_BUILDX_VERSION="0.10"
-ARG SRC_DIR="/usr/src"
-
-ARG DOCKER_SHA256="ec8a71e79125d3ca76f7cc295f35eea225f4450e0ffe0775f103e2952ff580f6"
-ARG DOCKER_VERSION="23.0.1"
 
 # Install Docker
-RUN set -ex \
-    && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
-    && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
-    && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
-    && rm docker.tgz && rm /usr/local/bin/dockerd \
-    && docker -v
-
-COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker:${DOCKER_VERSION}-cli /usr/local/bin/docker /usr/local/bin/docker
 RUN docker -v
 
-COPY --from=docker/compose-bin:v2.18.1 /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
-RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker compose version && docker-compose version
+COPY --from=docker/compose-bin:v$DOCKER_COMPOSE_VERSION /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker-compose version
 
-COPY --from=docker/buildx-bin:v0.10 /buildx /usr/libexec/docker/cli-plugins/docker-buildx
-RUN docker buildx version
+COPY --from=docker/buildx-bin:v$DOCKER_BUILDX_VERSION /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+RUN docker compose version && docker buildx version
 
 VOLUME /var/lib/docker
 #*********************** END  DOCKER  ****************************
@@ -81,10 +67,7 @@ RUN curl -fsSL https://apt.cli.rs/pubkey.asc | tee -a /usr/share/keyrings/rust-t
 
 
 #=======================End of layer: tools  =================
-FROM tools AS runtimes
-
+FROM tools AS runtime
 
 # Configure SSH
 COPY ssh_config /root/.ssh/config
-
-# docker run --rm -it -v $PWD:/app -v /var/run/docker.sock:/var/run/docker.sock --privileged  --workdir /app toolbox docker build -f dataset-test -f docker/graphql-dgs/Dockerfile /app
