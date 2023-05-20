@@ -42,11 +42,6 @@ ENV LC_CTYPE="C.UTF-8"
 FROM core AS tools
 
 #****************        DOCKER    *********************************************
-ARG DOCKER_VERSION="24.0.1"
-ARG DOCKER_COMPOSE_VERSION="2.18.1"
-ARG DOCKER_BUILDX_VERSION="0.10"
-
-# Install Docker
 COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 RUN docker -v
 
@@ -60,7 +55,7 @@ RUN docker compose version && docker buildx version
 VOLUME /var/lib/docker
 #*********************** END  DOCKER  ****************************
 
-# AWS Tools
+# K8s
 RUN curl -sS -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.25.6/2023-01-30/bin/linux/amd64/kubectl \
     && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash \
     && mv kustomize /usr/local/bin/ \
