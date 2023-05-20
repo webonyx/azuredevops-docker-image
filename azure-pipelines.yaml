@@ -10,17 +10,24 @@ variables:
 stages:
   - stage: Build
     jobs:
-      - job: Test
+      - job: ACR
         pool: Default
-        container:
-          image: webonyx/azuredevops-toolbox:latest
+        #container:
+          #image: webonyx/azuredevops-toolbox:latest
           # endpoint: ACC-NPRD-GRAPH-ACR-01
         steps:
-          - script: |
-              ls docker
-            name: ls
+          - task: Docker@2
+            name: BuildAndPush
+            inputs:
+              command: buildAndPush
+              addPipelineData: false
+              containerRegistry: webonyxregistrysouthcentralus
+              repository: toolbox
+              tags: latest
 
-      - job: Build
+      - job: PublicBuild
+        pool:
+          vmImage: ubuntu-latest
         steps:
           - script: |
               echo "##vso[task.setvariable variable=IMAGE_TAG]$(date +%Y%B%d)"
