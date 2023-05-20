@@ -7,18 +7,32 @@ trigger:
 variables:
   DOCKER_CONNECTION: DockerHub
 
-steps:
-  - script: |
-      echo "##vso[task.setvariable variable=IMAGE_TAG]$(date +%Y%B%d)"
-    name: SetImageTag
+stages:
+  - stage: Build
+    jobs:
+      - job: Test
+        pool: Default
+        container:
+          image: webonyx/azuredevops-toolbox:latest
+          # endpoint: ACC-NPRD-GRAPH-ACR-01
+        steps:
+          - script: |
+              ls docker
+            name: ls
 
-  - task: Docker@2
-    name: BuildAndPush
-    inputs:
-      command: buildAndPush
-      addPipelineData: false
-      containerRegistry: $(DOCKER_CONNECTION)
-      repository: webonyx/azuredevops-toolbox
-      tags: |
-        latest
-        $(IMAGE_TAG)
+      - job: Build
+        steps:
+          - script: |
+              echo "##vso[task.setvariable variable=IMAGE_TAG]$(date +%Y%B%d)"
+            name: SetImageTag
+
+          - task: Docker@2
+            name: BuildAndPush
+            inputs:
+              command: buildAndPush
+              addPipelineData: false
+              containerRegistry: $(DOCKER_CONNECTION)
+              repository: webonyx/azuredevops-toolbox
+              tags: |
+                latest
+                $(IMAGE_TAG)
