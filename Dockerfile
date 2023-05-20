@@ -56,10 +56,10 @@ RUN set -ex \
 COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
 RUN docker -v
 
-COPY --from=docker/compose-bin:2.18.1 /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+COPY --from=docker/compose-bin:v2.18.1 /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
 RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker compose version && docker-compose version
 
-COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+COPY --from=docker/buildx-bin:v0.10 /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 RUN docker buildx version
 
 VOLUME /var/lib/docker
