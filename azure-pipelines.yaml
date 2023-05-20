@@ -4,6 +4,10 @@ pool:
 trigger:
   - main
 
+variables:
+  ACR_NAME: webonyxregistrysouthcentralus
+  ACR_CONNECTION_NAME: webonyxregistrysouthcentralus
+
 steps:
   - script: |
       echo "##vso[task.setvariable variable=IMAGE_TAG]$(date +%Y%B%d)"
@@ -22,5 +26,5 @@ steps:
     inputs:
       command: push
       repository: toolbox
-      containerRegistry: webonyxregistrysouthcentralus
+      containerRegistry: $(ACR_CONNECTION_NAME)
       tags: $(IMAGE_TAG)
