@@ -1,3 +1,7 @@
+# syntax=docker/dockerfile:1
+
+FROM docker:24.0.1-cli AS docker
+
 FROM public.ecr.aws/ubuntu/ubuntu:22.04 AS core
 
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -19,12 +23,9 @@ RUN set -ex \
     && ssh-keyscan -t rsa,dsa,ed25519,ecdsa -H github.com >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
     && apt-get install -y -qq --no-install-recommends \
-          apt-utils autoconf automake build-essential zip bzip2 \
-          bzr curl dirmngr \
-          e2fsprogs expect fakeroot file g++ gcc gettext gettext-base \
-          gzip iptables jq less libapr1 libaprutil1 \
-          llvm locales make mlocate \
-          netbase openssl patch rsync tar unzip wget \
+          apt-utils autoconf automake zip bzip2 \
+          bzr curl g++ gcc gettext gettext-base \
+          gzip jq less make patch rsync tar unzip wget \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LC_CTYPE="C.UTF-8"
@@ -37,7 +38,6 @@ FROM core AS tools
 #****************        DOCKER    *********************************************
 ARG DOCKER_BUCKET="download.docker.com"
 ARG DOCKER_CHANNEL="stable"
-ARG DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034"
 ARG DOCKER_COMPOSE_VERSION="2.17.2"
 ARG SRC_DIR="/usr/src"
 
@@ -51,11 +51,13 @@ RUN set -ex \
     && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
     && rm docker.tgz \
     && docker -v \
-    && wget -q "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind" -O /usr/local/bin/dind \
     && curl -L https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/dind /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/docker-compose \
     # Ensure docker-compose works
     && docker-compose version
+
+COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+RUN docker buildx version
 
 VOLUME /var/lib/docker
 #*********************** END  DOCKER  ****************************
