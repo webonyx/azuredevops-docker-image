@@ -50,10 +50,13 @@ RUN set -ex \
     && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
     && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
     && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
-    && rm docker.tgz \
+    && rm docker.tgz && rm /usr/local/bin/dockerd \
     && docker -v
 
-COPY --from=docker/compose-bin:$DOCKER_COMPOSE_VERSION /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/docker
+RUN docker -v
+
+COPY --from=docker/compose-bin:2.18.1 /docker-compose /usr/libexec/docker/cli-plugins/docker-compose
 RUN ln -sf /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose && docker compose version && docker-compose version
 
 COPY --from=docker/buildx-bin /buildx /usr/libexec/docker/cli-plugins/docker-buildx
