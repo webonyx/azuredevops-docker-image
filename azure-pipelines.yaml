@@ -19,4 +19,6 @@ steps:
       addPipelineData: false
       containerRegistry: $(DOCKER_CONNECTION)
       repository: webonyx/azuredevops-toolbox
-      tags: $(IMAGE_TAG)
+      tags: |
+        latest
+        $(IMAGE_TAG)
