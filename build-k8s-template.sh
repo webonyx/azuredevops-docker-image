@@ -50,7 +50,7 @@ fi
 KUSTOMIZE_PATH=${KUSTOMIZE_BASED_PATH}/${OVERLAY:-template}
 if [ ! -d "$KUSTOMIZE_PATH" ]; then
   KUSTOMIZE_PATH=${KUSTOMIZE_BASED_PATH}/template
-  echo "[Warning] Overlay \"${OVERLAY}\" does not exists. Fallback to template overlay at \"${KUSTOMIZE_PATH}\""
+  echo "[Warning] Overlay \"${OVERLAY}\" does not exists. Fallback to \"template\" overlay at \"${KUSTOMIZE_PATH}\""
 fi
 
 
