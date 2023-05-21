@@ -75,3 +75,4 @@ FROM tools AS runtime
 
 # Configure SSH
 COPY ssh_config /root/.ssh/config
+COPY build-k8s-template.sh /usr/local/bin/
