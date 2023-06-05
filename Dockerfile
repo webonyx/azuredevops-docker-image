@@ -32,7 +32,10 @@ RUN set -ex \
           apt-utils autoconf automake zip bzip2 \
           bzr curl g++ gcc gettext gettext-base \
           gzip jq less make patch rsync tar unzip wget \
-    && rm -rf /var/lib/apt/lists/*
+          gnupg \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -sL https://deb.nodesource.com/setup_18.x  | bash - \
+    && apt-get install -y -qq --no-install-recommends nodejs
 
 ENV LC_CTYPE="C.UTF-8"
 
