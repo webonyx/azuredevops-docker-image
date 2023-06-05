@@ -35,7 +35,7 @@ RUN set -ex \
           gnupg \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sL https://deb.nodesource.com/setup_18.x  | bash - \
-    && apt-get install -y -qq --no-install-recommends nodejs
+    && apt-get install -y -qq --no-install-recommends nodejs yarn
 
 ENV LC_CTYPE="C.UTF-8"
 
