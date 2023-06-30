@@ -34,9 +34,10 @@ RUN set -ex \
           gzip jq less make patch rsync tar unzip wget \
           gnupg \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -sL https://deb.nodesource.com/setup_18.x  | bash - \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y -qq --no-install-recommends nodejs \
-    && npm install -g @azure/static-web-apps-cli yarn
+    && npm install -g @azure/static-web-apps-cli yarn \
+    && curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 ENV LC_CTYPE="C.UTF-8"
 
@@ -77,7 +78,10 @@ RUN curl -fsSL https://apt.cli.rs/pubkey.asc | tee -a /usr/share/keyrings/rust-t
 #=======================End of layer: tools  =================
 FROM tools AS runtime
 
+RUN chmod +x scripts/*
+
 # Configure SSH
 COPY ssh_config /root/.ssh/config
 COPY build-k8s-template.sh /usr/local/bin/
 COPY scripts/* /usr/local/bin/
+

@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
-BRANCH=${BRANCH:-develop}
+BRANCH=${BUILD_SOURCEBRANCHNAME:-develop}
 PREVIEW_ENDPOINT=${PREVIEW_ENDPOINT:-https://atlas-preview.att.com}
+SUBSCRIPTION=${SUBSCRIPTION:-8c135cf8-4843-4d61-9260-56f35f6ca745}
+RESOURCE_GROUP=${RESOURCE_GROUP:-unified-southcentralus-stage-webapp-rg}
+
+if [ "" = "$APP_NAME" ] || [ "" = "$SWA_DEPLOY_TOKEN" ]; then
+  echo "Required: APP_NAME, SWA_DEPLOY_TOKEN"
+  exit 1
+fi
 
 if [ "develop" = "$BRANCH" ]; then
   BUILD_ENV="staging"
@@ -24,8 +31,18 @@ echo $BUILD_BUILDID > public/version.txt
 copyConfig ".azure/.env.${BUILD_ENV}" .env.production.local
 copyConfig ".azure/staticwebapp.${BUILD_ENV}-config.json" staticwebapp.config.json
 
+DEPLOY_ENV="--env production"
 if [ "feature" = $BUILD_ENV ]; then
+  DEPLOY_ENV="--env preview"
   echo -e "\nPUBLIC_URL=${PREVIEW_ENDPOINT}/${BUILD_REPOSITORY_NAME}--$(echo $BRANCH | sed 's|[\._]|-|g')" >> .env.production.local
 fi
 
-yarn run build
+export NODE_OPTIONS=--openssl-legacy-provider
+
+yarn install \
+  && yarn build \
+  && swa deploy ./build $DEPLOY_ENV \
+    --deployment-token $SWA_DEPLOY_TOKEN \
+    --app-name $APP_NAME \
+    --subscription-id $SUBSCRIPTION \
+    --resource-group $RESOURCE_GROUP

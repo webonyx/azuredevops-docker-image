@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-SUBSCRIPTION=8c135cf8-4843-4d61-9260-56f35f6ca745
-PROFILE_NAME=AtlasCDN-NPRD
-RESOURCE_GROUP=unified-eastus2-stage-webapp-rg
-ENDPOINT_NAME=preview
-CUSTOM_DOMAINS=atlas-preview-att-com
+SUBSCRIPTION=${SUBSCRIPTION:-8c135cf8-4843-4d61-9260-56f35f6ca745}
+PROFILE_NAME=${PROFILE_NAME:-AtlasCDN-NPRD}
+RESOURCE_GROUP=${RESOURCE_GROUP:-unified-eastus2-stage-webapp-rg}
+ENDPOINT_NAME=${ENDPOINT_NAME:-preview}
+CUSTOM_DOMAINS=${CUSTOM_DOMAINS:-atlas-preview-att-com}
 
 ############################################
 
