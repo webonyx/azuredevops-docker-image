@@ -78,10 +78,9 @@ RUN curl -fsSL https://apt.cli.rs/pubkey.asc | tee -a /usr/share/keyrings/rust-t
 #=======================End of layer: tools  =================
 FROM tools AS runtime
 
-RUN chmod +x scripts/*
-
 # Configure SSH
 COPY ssh_config /root/.ssh/config
 COPY build-k8s-template.sh /usr/local/bin/
 COPY scripts/* /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/*
