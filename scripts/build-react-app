@@ -37,9 +37,6 @@ if [ "feature" = $BUILD_ENV ]; then
   echo -e "\nPUBLIC_URL=${PREVIEW_ENDPOINT}/${BUILD_REPOSITORY_NAME}--$(echo $BRANCH | sed 's|[\._]|-|g')" >> .env.production.local
 fi
 
-# Script needs to be in working dir for AzureCLI task to see it
-cp /usr/local/bin/configure-preview-route .
-
 export NODE_OPTIONS=--openssl-legacy-provider
 
 yarn install \
