@@ -35,8 +35,8 @@ RUN set -ex \
           gnupg \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sL https://deb.nodesource.com/setup_18.x  | bash - \
-    && apt-get install -y -qq --no-install-recommends nodejs yarn \
-    && npm install -g @azure/static-web-apps-cli
+    && apt-get install -y -qq --no-install-recommends nodejs \
+    && npm install -g @azure/static-web-apps-cli yarn
 
 ENV LC_CTYPE="C.UTF-8"
 
