@@ -8,9 +8,15 @@ CUSTOM_DOMAINS=${CUSTOM_DOMAINS:-atlas-preview-att-com}
 
 ############################################
 
+set -xe
+
 DEFAULT_FLAGS="--subscription $SUBSCRIPTION --profile-name $PROFILE_NAME --resource-group $RESOURCE_GROUP"
-ORIGIN_HOST=$(echo ${AZURESTATICWEBAPP_STATIC_WEB_APP_URL:-$AZURESTATICWEBAPP1_STATIC_WEB_APP_URL} | sed 's|https://||')
 ROUTE_NAME="${BUILD_REPOSITORY_NAME}--$(echo $BUILD_SOURCEBRANCHNAME | sed 's|[\._]|-|g')"
+
+if [[ "" = "$SWA_ORIGIN_HOST" ]]; then
+  echo "SWA_ORIGIN_HOST variable must be set by build step"
+  exit 1
+fi
 
 echo "Checking if origin group exists"
 if [ $(az afd origin-group show $DEFAULT_FLAGS --origin-group-name $ROUTE_NAME --output tsv | wc -l) -eq 0 ]; then
@@ -36,8 +42,8 @@ if [ $(az afd origin list $DEFAULT_FLAGS --origin-group-name $ROUTE_NAME --outpu
 	echo "Creating origin..."
 
 	az afd origin create $DEFAULT_FLAGS \
-		--host-name $ORIGIN_HOST \
-		--origin-host-header $ORIGIN_HOST \
+		--host-name $SWA_ORIGIN_HOST \
+		--origin-host-header $SWA_ORIGIN_HOST \
 		--origin-group-name $ROUTE_NAME \
 		--origin-name $ROUTE_NAME \
 		--priority 1 \
