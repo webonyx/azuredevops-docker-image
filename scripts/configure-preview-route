@@ -15,7 +15,7 @@ ROUTE_NAME="${BUILD_REPOSITORY_NAME}--$(echo $BUILD_SOURCEBRANCHNAME | sed 's|[\
 
 if [[ "" = "$SWA_ORIGIN_HOST" ]]; then
   echo "SWA_ORIGIN_HOST variable must be set by build step"
-  exit 1
+  exit
 fi
 
 echo "Checking if origin group exists"
