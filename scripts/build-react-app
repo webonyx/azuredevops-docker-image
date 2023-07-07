@@ -47,7 +47,9 @@ yarn install \
     --subscription-id $SUBSCRIPTION \
     --resource-group $RESOURCE_GROUP
 
-ENV_NAME=$( echo $BUILD_SOURCEBRANCHNAME | sed -e "s/[^A-Za-z]//g" )
-SWA_ORIGIN_HOST=$(az staticwebapp environment show --name $APP_NAME --environment-name $ENV_NAME --subscription $SUBSCRIPTION | jq -r .hostname)
+if [ "feature" = $BUILD_ENV ]; then
+  ENV_NAME=$( echo $BUILD_SOURCEBRANCHNAME | sed -e "s/[^A-Za-z]//g" )
+  SWA_ORIGIN_HOST=$(az staticwebapp environment show --name $APP_NAME --environment-name $ENV_NAME --subscription $SUBSCRIPTION | jq -r .hostname)
 
-echo "##vso[task.setvariable variable=SWA_ORIGIN_HOST;]$SWA_ORIGIN_HOST"
+  echo "##vso[task.setvariable variable=SWA_ORIGIN_HOST;]$SWA_ORIGIN_HOST"
+fi
